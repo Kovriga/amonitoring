@@ -1,5 +1,5 @@
 <template>
-  <div class="main--to-do">
+  <div v-if="spinVisible" class="main--to-do">
     <div class="uk-card uk-card-body to-do">
       <p>
         TO DO
@@ -8,8 +8,8 @@
         <div class="item--to-do" v-for="(item, index) in $store.state.toDoList.true" :key="index">
           <div @click="edit()">
             <div class="uk-card uk-card-default uk-card-body">
-              <h3 class="uk-card-title">{{item.title}}</h3>
-              <p>Created dy <span>{{item.userId}}</span></p>
+              <h3 class="uk-card-title">{{ item.title }}</h3>
+              <p class="uk-text-muted">Created dy <span class="uk-text-emphasis">{{ item.userId }}</span></p>
             </div>
           </div>
         </div>
@@ -23,18 +23,21 @@
         <div class="item--done" v-for="(item, index) in $store.state.toDoList.false" :key="index">
           <div @click="edit()">
             <div class="uk-card uk-card-default uk-card-body">
-              <h3 class="uk-card-title">{{item.title}}</h3>
-              <p>Created dy <span>{{item.userId}}</span></p>
+              <h3 class="uk-card-title">{{ item.title }}</h3>
+              <p class="uk-text-muted">Created dy <span class="uk-text-emphasis">{{ item.userId }}</span></p>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <div class="main--to-do-spin" v-else>
+    <div  uk-spinner="ratio: 3"></div>
+  </div>
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+import {Component, Vue, Watch} from 'vue-property-decorator';
 import {AxiosResponse} from 'axios';
 import {groupBy} from 'lodash';
 
@@ -42,10 +45,23 @@ import {groupBy} from 'lodash';
 
 export default class MainComponentToDoList extends Vue {
 
+  spinVisible = false;
+
+  @Watch('$store.state.actionUserId')
+  loadingToDoFromUserId(): void {
+    this.spinVisible = false;
+    this.$http.get(`https://jsonplaceholder.typicode.com/user/` + this.$store.state.actionUserId + `/todos/`).then((response: AxiosResponse) => {
+      this.$store.state.toDoList = groupBy(response.data, 'completed');
+    }).finally(() => {
+      this.spinVisible = true;
+    });
+  }
+
   created(): void {
     this.$http.get('https://jsonplaceholder.typicode.com/todos/').then((response: AxiosResponse) => {
       this.$store.state.toDoList = groupBy(response.data, 'completed');
-      console.log(this.$store.state.toDoList)
+    }).finally(() => {
+      this.spinVisible = true;
     });
   }
 
@@ -57,6 +73,10 @@ export default class MainComponentToDoList extends Vue {
 </script>
 
 <style scoped>
+.uk-card-title {
+  font-weight: 550;
+}
+
 .item--to-do:not(:first-child), .item--done:not(:first-child) {
   margin-top: 24px;
 }
@@ -66,12 +86,21 @@ export default class MainComponentToDoList extends Vue {
   border-radius: 8px;
 }
 
-.item--done > div , .item--to-do > div  {
+.item--done > div, .item--to-do > div {
   max-width: 320px;
 }
 
 .main--to-do {
   display: flex;
+  flex: auto;
+  justify-content: center;
+  height: 100vh;
+  background-color: #F2F4F7;
+}
+
+.main--to-do-spin {
+  display: flex;
+  align-items: center;
   flex: auto;
   justify-content: center;
   height: 100vh;
