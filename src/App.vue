@@ -23,4 +23,10 @@ export default class App extends Vue {
   height: 100vh;
   display: flex;
 }
+
+@media (min-width: 1200px) {
+  .uk-card-body {
+    padding: 20px 20px;
+  }
+}
 </style>

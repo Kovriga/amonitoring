@@ -10,13 +10,15 @@
         </div>
         <div class="to-do-list--nav-bar">
           <div class="list--nav-bar">
-            <div class="uk-container-expand item-list--nav-bar">
-              <div class="uk-container-large">
-                <span uk-icon="icon: thumbnails; ratio: 1"></span>
-                <p class="uk-text-bold uk-text-emphasis">Tasks</p>
+            <span class="item-for--nav-bar" v-for="(item, index) in $store.state.users" :key="index">
+              <div @click="actionUserId(item.id)" class="uk-container-expand item-list--nav-bar">
+                <div class="uk-container-large">
+                  <span uk-icon="icon: thumbnails; ratio: 1"></span>
+                  <p class="uk-text-bold uk-text-emphasis">{{ item.name }}</p>
+                </div>
+                <div class="main--item-icon">{{ item.id }}</div>
               </div>
-              <div class="main--item-icon">4</div>
-            </div>
+            </span>
           </div>
           <div class="edit--nav-bar">
             <div class="uk-container-expand item-edit--nav-bar">
@@ -38,15 +40,35 @@
 
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator';
+import {AxiosResponse} from "axios";
 
 @Component({})
 
 export default class NavBarToDo extends Vue {
+
+  actionUserId(id: number): void {
+    this.$store.commit('setUserId', id)
+  }
+
+  created(): void {
+    this.$http.get('https://jsonplaceholder.typicode.com/users/').then((response: AxiosResponse) => {
+      this.$store.commit('setUsers', response.data)
+    })
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-.to-do-list--nav-bar{
+.item-for--nav-bar > div {
+  transition: 0.5s;
+}
+
+.item-for--nav-bar > div:hover {
+  background-color: dodgerblue;
+  color: #e1e1e1;
+}
+
+.to-do-list--nav-bar {
   height: 100%;
   width: 272px;
   margin-top: 34px;
@@ -55,6 +77,7 @@ export default class NavBarToDo extends Vue {
 .edit--nav-bar {
   width: 100%;
 }
+
 .item-edit--nav-bar {
   width: 100%;
   display: flex;
@@ -65,6 +88,7 @@ export default class NavBarToDo extends Vue {
   display: flex;
   align-items: center;
 }
+
 .item-edit--nav-bar > div > span {
   margin-right: 8px;
 }
