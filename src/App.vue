@@ -1,15 +1,15 @@
 <template>
   <div id="app">
-
+    <nav-bar-to-do/>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import {Component, Vue} from 'vue-property-decorator';
+import NavBarToDo from "@/components/NavBarToDo.vue";
 
 @Component({
-  components: {
-  },
+  components: {NavBarToDo},
 })
 export default class App extends Vue {
 
@@ -17,5 +17,7 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
-
+#app {
+  height: 100vh;
+}
 </style>
