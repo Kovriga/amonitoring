@@ -100,7 +100,7 @@ export default class MainComponentToDoList extends Vue {
 }
 
 .to-do > div, .done > div {
-  max-height: 760px;
+  max-height: 100%;
   overflow: auto;
 }
 

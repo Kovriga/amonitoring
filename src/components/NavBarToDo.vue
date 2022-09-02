@@ -47,6 +47,7 @@ export default class NavBarToDo extends Vue {
 
 <style lang="scss" scoped>
 .to-do-list--nav-bar{
+  height: 100%;
   width: 272px;
   margin-top: 34px;
 }
@@ -104,8 +105,8 @@ export default class NavBarToDo extends Vue {
 }
 
 .list--nav-bar {
-  height: 760px;
   overflow: auto;
+  height: 95%;
   width: 100%;
 }
 
