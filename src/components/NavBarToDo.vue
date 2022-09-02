@@ -22,11 +22,11 @@
             <div class="uk-container-expand item-edit--nav-bar">
               <div class="uk-container-large">
                 <span uk-icon="icon: cog; ratio: 1"></span>
-                <p class="uk-text-bold uk-text-emphasis">Settings</p>
+                <p class="uk-text-normal uk-text-emphasis">Settings</p>
               </div>
               <div class="uk-container-large">
                 <span uk-icon="icon: cog; ratio: 1"></span>
-                <p class="uk-text-bold uk-text-emphasis">NewTask</p>
+                <p class="uk-text-normal uk-text-emphasis">NewTask</p>
               </div>
             </div>
           </div>
@@ -69,6 +69,7 @@ export default class NavBarToDo extends Vue {
 }
 
 .item-edit--nav-bar > div > p {
+  font-weight: 550;
   color: #667085 !important;
   margin: 0;
 }
