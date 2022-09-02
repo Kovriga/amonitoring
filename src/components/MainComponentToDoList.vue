@@ -9,7 +9,7 @@
           <div @click="edit()">
             <div class="uk-card uk-card-default uk-card-body">
               <h3 class="uk-card-title">{{ item.title }}</h3>
-              <p class="uk-text-muted">Created dy <span class="uk-text-emphasis">{{ item.userId }}</span></p>
+              <p>Created dy <span class="uk-text-emphasis">{{ item.userId }}</span></p>
             </div>
           </div>
         </div>
@@ -24,7 +24,7 @@
           <div @click="edit()">
             <div class="uk-card uk-card-default uk-card-body">
               <h3 class="uk-card-title">{{ item.title }}</h3>
-              <p class="uk-text-muted">Created dy <span class="uk-text-emphasis">{{ item.userId }}</span></p>
+              <p>Created dy <span class="uk-text-emphasis">{{ item.userId }}</span></p>
             </div>
           </div>
         </div>
@@ -144,6 +144,10 @@ export default class MainComponentToDoList extends Vue {
 
 .item--done > div > div:hover, .item--to-do > div > div:hover {
   background-color: dodgerblue;
-  color: #e1e1e1;
+  color: #e1e1e1 !important;
+}
+
+.item--done > div > div, .item--to-do > div > div {
+  color: #98A2B3;
 }
 </style>
