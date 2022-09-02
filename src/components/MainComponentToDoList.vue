@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main--to-do">
 
   </div>
 </template>
@@ -15,5 +15,10 @@ export default class MainComponentToDoList extends Vue {
 </script>
 
 <style scoped>
-
+.main--to-do {
+  display: flex;
+  flex: auto;
+  height: 100vh;
+  background-color: #F2F4F7;
+}
 </style>

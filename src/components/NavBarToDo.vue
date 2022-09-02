@@ -70,6 +70,7 @@ export default class NavBarToDo extends Vue {
 
 .item-edit--nav-bar > div > p {
   color: #667085 !important;
+  margin: 0;
 }
 
 .name--nav-bar > div {
@@ -102,8 +103,8 @@ export default class NavBarToDo extends Vue {
 }
 
 .list--nav-bar {
-  overflow: auto;
   height: 760px;
+  overflow: auto;
   width: 100%;
 }
 
