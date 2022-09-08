@@ -26,13 +26,33 @@
                 <span uk-icon="icon: cog; ratio: 1"></span>
                 <p class="uk-text-normal uk-text-emphasis">Settings</p>
               </div>
-              <div class="uk-container-large">
-                <span uk-icon="icon: cog; ratio: 1"></span>
-                <p class="uk-text-normal uk-text-emphasis">NewTask</p>
+              <div class="uk-container-large" @click="newTask = !newTask">
+                <span uk-icon="icon: cog; ratio: 1" ></span>
+                <p class="uk-text-normal uk-text-emphasis">New Task</p>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div id="dialog--add-new-task" v-if="newTask" @keydown.esc="newTask = false" @click="newTask = false">
+      <div class="uk-card uk-card-default uk-card-body uk-width-1-2@m uk-position-center" >
+        <h3 class="uk-card-title">New Task</h3>
+        <form>
+          <fieldset class="uk-fieldset">
+            <div class="uk-margin">
+              <input class="uk-input" type="text" placeholder="Task" v-model="taskTitle">
+            </div>
+            <div class="uk-margin" v-if="$store.state.actionUserId === 0">
+              <select v-model="selected" class="uk-select">
+                <option :value="item.id" v-for="(item, index) in $store.state.users" :key="index">
+                  {{ item.name }}
+                </option>
+              </select>
+            </div>
+          </fieldset>
+        </form>
+        <button :disabled="!taskTitle" class="uk-button uk-button-default" @click="addTask()">Add</button>
       </div>
     </div>
   </div>
@@ -42,9 +62,14 @@
 import {Component, Vue} from 'vue-property-decorator';
 import {AxiosResponse} from "axios";
 
+
 @Component({})
 
 export default class NavBarToDo extends Vue {
+
+  newTask = false;
+  selected = 0;
+  taskTitle = '';
 
   actionUserId(id: number): void {
     this.$store.commit('setUserId', id)
@@ -55,10 +80,38 @@ export default class NavBarToDo extends Vue {
       this.$store.commit('setUsers', response.data)
     })
   }
+
+  addTask(): void {
+    this.$http.post('https://jsonplaceholder.typicode.com/todos', {
+      userId: this.$store.state.actionUserId === 0 ? this.selected : this.$store.state.actionUserId,
+      title: this.taskTitle,
+      completed: false
+    }).then(() => {
+      if(this.$store.state.actionUserId === 0) {
+        this.$store.dispatch("getToDoList", [this.$http]);
+      } else {
+        this.$store.dispatch("loadingToDoFromUserId", [this.$http, this.$store.state.actionUserId]);
+      }
+    }).finally(() => {
+      this.newTask = false;
+    })
+  }
 }
 </script>
 
 <style lang="scss" scoped>
+#dialog--add-new-task {
+  z-index: 5;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, .2);
+}
+
+#dialog--add-new-task > div {
+  height: 27%;
+}
+
 .item-for--nav-bar > div {
   transition: 0.5s;
 }
@@ -194,5 +247,13 @@ export default class NavBarToDo extends Vue {
   flex-direction: column;
   align-content: center;
   align-items: center;
+}
+
+@media (min-width: 640px) {
+  .uk-offcanvas-bar {
+    left: 0;
+    width: 350px;
+    padding: 30px 30px;
+  }
 }
 </style>

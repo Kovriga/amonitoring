@@ -1,14 +1,18 @@
 <template>
-  <div v-if="spinVisible" class="main--to-do">
+  <div v-if="!$store.state.loadSpin" class="main--to-do">
     <div class="uk-card uk-card-body to-do">
       <p>
         TO DO
       </p>
       <div>
         <div class="item--to-do" v-for="(item, index) in $store.state.toDoList.true" :key="index">
-          <div @click="edit()">
+          <div>
             <div class="uk-card uk-card-default uk-card-body">
               <h3 class="uk-card-title">{{ item.title }}</h3>
+              <div class="item--icon">
+                <a @click="deleteToDoItem(item)" class="uk-icon-button delete" uk-icon="trash"></a>
+                <a @click="edit(item)" class="uk-icon-button add-done" uk-icon="check"></a>
+              </div>
               <p>Created dy <span class="uk-text-emphasis">{{ item.userId }}</span></p>
             </div>
           </div>
@@ -21,9 +25,12 @@
       </p>
       <div>
         <div class="item--done" v-for="(item, index) in $store.state.toDoList.false" :key="index">
-          <div @click="edit()">
+          <div>
             <div class="uk-card uk-card-default uk-card-body">
               <h3 class="uk-card-title">{{ item.title }}</h3>
+              <div class="item--icon">
+                <a @click="deleteToDoItem(item)" class="uk-icon-button delete" uk-icon="trash"></a>
+              </div>
               <p>Created dy <span class="uk-text-emphasis">{{ item.userId }}</span></p>
             </div>
           </div>
@@ -32,47 +39,68 @@
     </div>
   </div>
   <div class="main--to-do-spin" v-else>
-    <div  uk-spinner="ratio: 3"></div>
+    <div uk-spinner="ratio: 3"></div>
   </div>
 </template>
 
 <script lang="ts">
 import {Component, Vue, Watch} from 'vue-property-decorator';
-import {AxiosResponse} from 'axios';
-import {groupBy} from 'lodash';
 
 @Component
 
 export default class MainComponentToDoList extends Vue {
 
-  spinVisible = false;
-
   @Watch('$store.state.actionUserId')
   loadingToDoFromUserId(): void {
-    this.spinVisible = false;
-    this.$http.get(`https://jsonplaceholder.typicode.com/user/` + this.$store.state.actionUserId + `/todos/`).then((response: AxiosResponse) => {
-      this.$store.state.toDoList = groupBy(response.data, 'completed');
-    }).finally(() => {
-      this.spinVisible = true;
-    });
+    this.$store.dispatch("loadingToDoFromUserId", [this.$http, this.$store.state.actionUserId]);
   }
 
   created(): void {
-    this.$http.get('https://jsonplaceholder.typicode.com/todos/').then((response: AxiosResponse) => {
-      this.$store.state.toDoList = groupBy(response.data, 'completed');
-    }).finally(() => {
-      this.spinVisible = true;
+    this.$store.dispatch("getToDoList", [this.$http]);
+  }
+
+  edit(item): void {
+    this.$http.patch(`https://jsonplaceholder.typicode.com/todos/` + item.id, {
+      completed: true
+    }).then(() => {
+      if (this.$store.state.actionUserId === 0) {
+        this.$store.dispatch("getToDoList", [this.$http]);
+      } else {
+        this.$store.dispatch("loadingToDoFromUserId", [this.$http, this.$store.state.actionUserId]);
+      }
     });
   }
 
-  edit(): void {
-    console.log('э')
+  deleteToDoItem(item): void {
+    this.$http.delete('https://jsonplaceholder.typicode.com/todos/' + item.id).then(() => {
+      if (this.$store.state.actionUserId === 0) {
+        this.$store.dispatch("getToDoList", [this.$http]);
+      } else {
+        this.$store.dispatch("loadingToDoFromUserId", [this.$http, this.$store.state.actionUserId]);
+      }
+    });
   }
 
 }
 </script>
 
 <style scoped>
+
+.item--icon {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.delete:hover {
+  background-color: rgb(217, 11, 52);
+}
+
+.add-done:hover {
+  background-color: rgb(114, 217, 11);
+}
+
 .uk-card-title {
   font-weight: 550;
 }
