@@ -20,7 +20,14 @@ export default class App extends Vue {
 
 <style lang="scss">
 #app {
+  overflow: hidden;
   height: 100vh;
   display: flex;
+}
+
+@media (min-width: 1200px) {
+  .uk-card-body {
+    padding: 20px 20px;
+  }
 }
 </style>

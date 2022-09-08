@@ -2,21 +2,21 @@
   <div class="main--nav-bar">
     <div>
       <div class="uk-card uk-card-default uk-card-header">
-        <div class="uk-container-expand name--nav-bar">
-          <div class="uk-container-large">
+        <div class="to-do-list--nav-bar">
+          <div class="uk-container-large header-name">
             <div class="main--header-icon"></div>
             <p class="uk-text-bold uk-text-emphasis">Company</p>
           </div>
-        </div>
-        <div class="to-do-list--nav-bar">
           <div class="list--nav-bar">
-            <div class="uk-container-expand item-list--nav-bar">
-              <div class="uk-container-large">
-                <span uk-icon="icon: thumbnails; ratio: 1"></span>
-                <p class="uk-text-bold uk-text-emphasis">Tasks</p>
+            <span class="item-for--nav-bar" v-for="(item, index) in $store.state.users" :key="index">
+              <div @click="actionUserId(item.id)" class="uk-container-expand item-list--nav-bar">
+                <div class="uk-container-large">
+                  <img class="icon" src="../assets/view-grid.svg">
+                  <p class="uk-text-bold uk-text-emphasis">{{ item.name }}</p>
+                </div>
+                <div class="main--item-icon">{{ item.id }}</div>
               </div>
-              <div class="main--item-icon">4</div>
-            </div>
+            </span>
           </div>
           <div class="edit--nav-bar">
             <div class="uk-container-expand item-edit--nav-bar">
@@ -24,13 +24,33 @@
                 <span uk-icon="icon: cog; ratio: 1"></span>
                 <p class="uk-text-normal uk-text-emphasis">Settings</p>
               </div>
-              <div class="uk-container-large">
-                <span uk-icon="icon: cog; ratio: 1"></span>
-                <p class="uk-text-normal uk-text-emphasis">NewTask</p>
+              <div class="uk-container-large" @click="newTask = !newTask">
+                <span uk-icon="icon: cog; ratio: 1" ></span>
+                <p class="uk-text-normal uk-text-emphasis">New Task</p>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div id="dialog--add-new-task" v-if="newTask" @keydown.esc="newTask = false" @click="newTask = false">
+      <div class="uk-card uk-card-default uk-card-body uk-width-1-2@m uk-position-center" >
+        <h3 class="uk-card-title">New Task</h3>
+        <form>
+          <fieldset class="uk-fieldset">
+            <div class="uk-margin">
+              <input class="uk-input" type="text" placeholder="Task" v-model="taskTitle">
+            </div>
+            <div class="uk-margin" v-if="$store.state.actionUserId === 0">
+              <select v-model="selected" class="uk-select">
+                <option :value="item.id" v-for="(item, index) in $store.state.users" :key="index">
+                  {{ item.name }}
+                </option>
+              </select>
+            </div>
+          </fieldset>
+        </form>
+        <button :disabled="!taskTitle" class="uk-button uk-button-default" @click="addTask()">Add</button>
       </div>
     </div>
   </div>
@@ -38,24 +58,95 @@
 
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator';
+import {AxiosResponse} from "axios";
+
 
 @Component({})
 
 export default class NavBarToDo extends Vue {
+
+  newTask = false;
+  selected = 1;
+  taskTitle = '';
+
+  actionUserId(id: number): void {
+    this.$store.commit('setUserId', id)
+  }
+
+  created(): void {
+    this.$http.get('https://jsonplaceholder.typicode.com/users/').then((response: AxiosResponse) => {
+      this.$store.commit('setUsers', response.data)
+    })
+  }
+
+  addTask(): void {
+    this.$http.post('https://jsonplaceholder.typicode.com/todos', {
+      userId: this.$store.state.actionUserId === 0 ? this.selected : this.$store.state.actionUserId,
+      title: this.taskTitle,
+      completed: false
+    }).then(() => {
+      if(this.$store.state.actionUserId === 0) {
+        this.$store.dispatch("getToDoList", [this.$http]);
+      } else {
+        this.$store.dispatch("loadingToDoFromUserId", [this.$http, this.$store.state.actionUserId]);
+      }
+    }).finally(() => {
+      this.newTask = false;
+    })
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-.to-do-list--nav-bar{
+p {
+  cursor: default
+}
+#dialog--add-new-task {
+  z-index: 5;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, .2);
+}
+
+#dialog--add-new-task > div {
+  height: 260px;
+}
+
+.item-for--nav-bar > div {
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.item-for--nav-bar > div:hover {
+  background-color: dodgerblue;
+  color: #e1e1e1;
+}
+
+.to-do-list--nav-bar {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
   height: 100%;
   width: 272px;
-  margin-top: 34px;
+}
+
+.icon{
+  margin: 7px;
+}
+
+.header-name {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .edit--nav-bar {
   width: 100%;
 }
+
 .item-edit--nav-bar {
+  cursor: pointer;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -65,6 +156,7 @@ export default class NavBarToDo extends Vue {
   display: flex;
   align-items: center;
 }
+
 .item-edit--nav-bar > div > span {
   margin-right: 8px;
 }
@@ -108,6 +200,7 @@ export default class NavBarToDo extends Vue {
   overflow: auto;
   height: 95%;
   width: 100%;
+  margin: 24px 0;
 }
 
 .list--nav-bar::-webkit-scrollbar {
@@ -170,5 +263,13 @@ export default class NavBarToDo extends Vue {
   flex-direction: column;
   align-content: center;
   align-items: center;
+}
+
+@media (min-width: 850px) {
+  .uk-offcanvas-bar {
+    left: 0;
+    width: 350px;
+    padding: 30px 30px;
+  }
 }
 </style>
