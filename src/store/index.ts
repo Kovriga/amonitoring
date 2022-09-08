@@ -35,19 +35,6 @@ export default new Vuex.Store({
     },
     actions: {
 
-
-        /*fetch('https://jsonplaceholder.typicode.com/posts/1', {
-      method: 'PATCH',
-          body: JSON.stringify({
-        title: 'foo',
-      }),
-          headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    })*/
-
-
-
         loadingToDoFromUserId({commit}, [$http, actionUserId]): void {
             commit('setLoadSpin', true);
             $http.get(`https://jsonplaceholder.typicode.com/user/` + actionUserId + `/todos/`).then((response: AxiosResponse) => {

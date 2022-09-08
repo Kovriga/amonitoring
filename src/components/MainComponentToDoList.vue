@@ -86,6 +86,10 @@ export default class MainComponentToDoList extends Vue {
 
 <style scoped>
 
+h3, p {
+  cursor: default;
+}
+
 .item--icon {
   display: flex;
   justify-content: space-around;

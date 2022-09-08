@@ -2,18 +2,16 @@
   <div class="main--nav-bar">
     <div>
       <div class="uk-card uk-card-default uk-card-header">
-        <div class="uk-container-expand name--nav-bar">
-          <div class="uk-container-large">
+        <div class="to-do-list--nav-bar">
+          <div class="uk-container-large header-name">
             <div class="main--header-icon"></div>
             <p class="uk-text-bold uk-text-emphasis">Company</p>
           </div>
-        </div>
-        <div class="to-do-list--nav-bar">
           <div class="list--nav-bar">
             <span class="item-for--nav-bar" v-for="(item, index) in $store.state.users" :key="index">
               <div @click="actionUserId(item.id)" class="uk-container-expand item-list--nav-bar">
                 <div class="uk-container-large">
-                  <span uk-icon="icon: thumbnails; ratio: 1"></span>
+                  <img class="icon" src="../assets/view-grid.svg">
                   <p class="uk-text-bold uk-text-emphasis">{{ item.name }}</p>
                 </div>
                 <div class="main--item-icon">{{ item.id }}</div>
@@ -68,7 +66,7 @@ import {AxiosResponse} from "axios";
 export default class NavBarToDo extends Vue {
 
   newTask = false;
-  selected = 0;
+  selected = 1;
   taskTitle = '';
 
   actionUserId(id: number): void {
@@ -100,6 +98,9 @@ export default class NavBarToDo extends Vue {
 </script>
 
 <style lang="scss" scoped>
+p {
+  cursor: default
+}
 #dialog--add-new-task {
   z-index: 5;
   position: absolute;
@@ -109,10 +110,11 @@ export default class NavBarToDo extends Vue {
 }
 
 #dialog--add-new-task > div {
-  height: 27%;
+  height: 260px;
 }
 
 .item-for--nav-bar > div {
+  cursor: pointer;
   transition: 0.5s;
 }
 
@@ -122,9 +124,21 @@ export default class NavBarToDo extends Vue {
 }
 
 .to-do-list--nav-bar {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
   height: 100%;
   width: 272px;
-  margin-top: 34px;
+}
+
+.icon{
+  margin: 7px;
+}
+
+.header-name {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .edit--nav-bar {
@@ -132,6 +146,7 @@ export default class NavBarToDo extends Vue {
 }
 
 .item-edit--nav-bar {
+  cursor: pointer;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -185,6 +200,7 @@ export default class NavBarToDo extends Vue {
   overflow: auto;
   height: 95%;
   width: 100%;
+  margin: 24px 0;
 }
 
 .list--nav-bar::-webkit-scrollbar {
@@ -249,7 +265,7 @@ export default class NavBarToDo extends Vue {
   align-items: center;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 850px) {
   .uk-offcanvas-bar {
     left: 0;
     width: 350px;
